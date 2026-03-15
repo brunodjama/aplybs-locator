@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APLYBS LOCATOR</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root { 
+            --burkina-rouge: #ef2b2d; 
+            --burkina-vert: #009e49; 
+            --burkina-jaune: #fcd116; 
+            --dark: #2c3e50;
+        }
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background-color: #f4f7f6; margin: 0; padding: 10px; display: none; }
+        .container { max-width: 450px; margin: 20px auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--burkina-rouge); }
+        
+        .logo-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .logo-amicale { width: 160px; height: auto; margin-bottom: 10px; }
+        .logo-app { width: 60px; height: auto; border: 2px solid var(--burkina-jaune); border-radius: 50%; padding: 3px; background: white; }
+        
+        h1 { color: var(--dark); margin: 5px 0; font-size: 22px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: var(--dark); }
+        select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 2px solid #ddd; font-size: 16px; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-share { background: var(--burkina-vert); color: white; }
+        .btn-arrived { background: #3498db; color: white; display: none; margin-top: 20px; }
+        .btn-logout { background: #95a5a6; color: white; display: none; margin-top: 30px; font-size: 14px; }
+        #resultat { margin-top: 20px; display: none; background: #fffdf2; padding: 15px; border-radius: 10px; border: 1px solid var(--burkina-jaune); }
+        #qrcode { display: flex; justify-content: center; margin: 15px 0; }
+        #linkApp { color: #2980b9; font-weight: bold; text-decoration: none; display: block; margin-top: 10px;}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-area">
+            <img src="lyb.png" class="logo-amicale" alt="Logo Amicale APLYBS">
+            <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" class="logo-app" alt="Logo Application">
+        </div>
+        
+        <h1>APLYBS LOCATOR</h1>
+        <p>Amicale du Lycée de Burkina</p>
+
+        <label for="motif">But du partage :</label>
+        <select id="motif">
+            <option value="Réunion mensuelle">🏠 Réunion mensuelle</option>
+            <option value="Rencontre Bureau">💼 Rencontre membres du bureau</option>
+            <option value="Événement Spécial">🎉 Événement spécial</option>
+            <option value="Autre">📍 Autre</option>
+        </select>
+
+        <button class="btn btn-share" id="btnPartager" onclick="lancerLocalisation()">📍 PARTAGER MA MAISON</button>
+
+        <div id="resultat">
+            <h3 id="titreMotif" style="color: var(--burkina-rouge);"></h3>
+            <div id="qrcode"></div>
+            <p>Lien généré :</p>
+            <a id="linkApp" target="_blank">Ouvrir l'itinéraire</a>
+        </div>
+
+        <button class="btn btn-arrived" id="btnArrive" onclick="signalerArrivee()">✅ JE SUIS ARRIVÉ !</button>
+        <button class="btn btn-logout" id="btnLogout" onclick="deconnexion()">Déconnexion / Fermer</button>
+    </div>
+
+    <script>
+        const CODE_SECRET = "2026"; 
+
+        window.onload = function() {
+            let tentative = prompt("Entrez le code secret APLYBS :");
+            if (tentative === CODE_SECRET) {
+                document.body.style.display = "block";
+            } else {
+                alert("Accès refusé. Code incorrect.");
+                document.body.innerHTML = "<div style='padding:50px;'><h1>Accès Verrouillé 🔒</h1><p>Veuillez contacter l'administrateur.</p></div>";
+                document.body.style.display = "block";
+            }
+        };
+
+        let lienGlobal = "";
+
+        function lancerLocalisation() {
+            const motif = document.getElementById('motif').value;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    lienGlobal = `https://www.google.com/maps?q=${lat},${lon}`;
+                    
+                    document.getElementById('resultat').style.display = 'block';
+                    document.getElementById('titreMotif').innerText = motif;
+                    document.getElementById('linkApp').href = lienGlobal;
+                    document.getElementById('linkApp').innerText = "Cliquer pour voir le trajet";
+                    
+                    document.getElementById('btnArrive').style.display = 'block';
+                    document.getElementById('btnLogout').style.display = 'block';
+                    document.getElementById('btnPartager').style.display = 'none';
+
+                    document.getElementById('qrcode').innerHTML = "";
+                    new QRCode(document.getElementById("qrcode"), { text: lienGlobal, width: 150, height: 150 });
+
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'APLYBS LOCATOR',
+                            text: `Lieu de la réunion (${motif}) :`,
+                            url: lienGlobal
+                        });
+                    }
+                }, function() {
+                    alert("Erreur : Veuillez activer le GPS.");
+                });
+            }
+        }
+
+        function signalerArrivee() {
+            const msg = encodeURIComponent("Je suis bien arrivé à la réunion de l'Amicale ! 🏠");
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
+
+        function deconnexion() {
+            if(confirm("Voulez-vous quitter l'application ?")) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

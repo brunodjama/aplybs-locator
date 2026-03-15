@@ -1,0 +1,21 @@
+{
+  "name": "APLYBS LOCATOR",
+  "short_name": "APLYBS",
+  "description": "Localisation Amicale du Lycée de Burkina",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ef2b2d",
+  "icons": [
+    {
+      "src": "lyb.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "lyb.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
