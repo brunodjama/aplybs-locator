@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APLYBS LOCATOR</title>
+    <title>APLYBS LOCATOR | Officiel</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -12,38 +12,101 @@
             --burkina-vert: #009e49; 
             --burkina-jaune: #fcd116; 
             --dark: #2c3e50;
+            --shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; background-color: #f4f7f6; margin: 0; padding: 10px; display: none; }
-        .container { max-width: 450px; margin: 20px auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--burkina-rouge); }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #f4f7f6 0%, #e1e8e7 100%);
+            margin: 0; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 15px;
+            display: none; /* Contrôlé par le JS */
+        }
+
+        .container { 
+            width: 100%;
+            max-width: 420px; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 25px; 
+            box-shadow: var(--shadow); 
+            border-top: 10px solid var(--burkina-rouge); 
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Effet décoratif */
+        .container::after {
+            content: "";
+            position: absolute;
+            top: 0; right: 0;
+            width: 50px; height: 50px;
+            background: var(--burkina-jaune);
+            clip-path: polygon(100% 0, 0 0, 100% 100%);
+        }
         
-        .logo-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
-        .logo-amicale { width: 160px; height: auto; margin-bottom: 10px; }
-        .logo-app { width: 60px; height: auto; border: 2px solid var(--burkina-jaune); border-radius: 50%; padding: 3px; background: white; }
+        .logo-area { margin-bottom: 25px; text-align: center; }
+        .logo-amicale { width: 140px; height: auto; margin-bottom: 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .logo-app { width: 55px; height: auto; border: 3px solid var(--burkina-jaune); border-radius: 50%; padding: 4px; background: white; }
         
-        h1 { color: var(--dark); margin: 5px 0; font-size: 22px; }
-        label { display: block; margin-top: 15px; font-weight: bold; color: var(--dark); }
-        select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 2px solid #ddd; font-size: 16px; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-share { background: var(--burkina-vert); color: white; }
-        .btn-arrived { background: #3498db; color: white; display: none; margin-top: 20px; }
-        .btn-logout { background: #95a5a6; color: white; display: none; margin-top: 30px; font-size: 14px; }
-        #resultat { margin-top: 20px; display: none; background: #fffdf2; padding: 15px; border-radius: 10px; border: 1px solid var(--burkina-jaune); }
-        #qrcode { display: flex; justify-content: center; margin: 15px 0; }
-        #linkApp { color: #2980b9; font-weight: bold; text-decoration: none; display: block; margin-top: 10px;}
+        h1 { color: var(--dark); margin: 10px 0 5px; font-size: 24px; letter-spacing: 1px; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 25px; }
+
+        label { display: block; text-align: left; margin-top: 20px; font-weight: 600; color: var(--dark); font-size: 14px; }
+        select { 
+            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; 
+            border: 2px solid #eee; font-size: 16px; background-color: #f9f9f9;
+            outline: none; transition: border-color 0.3s;
+        }
+        select:focus { border-color: var(--burkina-vert); }
+
+        .btn { 
+            width: 100%; padding: 16px; border: none; border-radius: 12px; 
+            font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; 
+            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-share { background: var(--burkina-vert); color: white; box-shadow: 0 4px 15px rgba(0,158,73,0.3); }
+        .btn-share:hover { background: #00853e; }
+
+        .btn-arrived { background: #3498db; color: white; display: none; }
+        .btn-logout { background: #f0f0f0; color: #666; display: none; margin-top: 25px; font-size: 13px; }
+
+        #resultat { 
+            margin-top: 25px; display: none; background: #fffdf2; padding: 20px; 
+            border-radius: 15px; border: 1px dashed var(--burkina-jaune);
+            animation: fadeIn 0.5s ease;
+        }
+
+        #qrcode { margin: 15px 0; padding: 10px; background: white; border-radius: 10px; display: inline-block; }
+        
+        #linkApp { 
+            color: #2980b9; font-weight: bold; text-decoration: none; 
+            padding: 10px; border: 1px solid #2980b9; border-radius: 8px; margin-top: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="logo-area">
-            <img src="lyb.png" class="logo-amicale" alt="Logo Amicale APLYBS">
-            <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" class="logo-app" alt="Logo Application">
+            <img src="lyb.png" class="logo-amicale" alt="Logo Amicale">
+            <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" class="logo-app" alt="GPS">
+            <h1>APLYBS LOCATOR</h1>
+            <div class="subtitle">Amicale du Lycée de Burkina</div>
         </div>
         
-        <h1>APLYBS LOCATOR</h1>
-        <p>Amicale du Lycée de Burkina</p>
-
-        <label for="motif">But du partage :</label>
+        <label for="motif">📍 Pourquoi partagez-vous votre position ?</label>
         <select id="motif">
             <option value="Réunion mensuelle">🏠 Réunion mensuelle</option>
             <option value="Rencontre Bureau">💼 Rencontre membres du bureau</option>
@@ -51,75 +114,89 @@
             <option value="Autre">📍 Autre</option>
         </select>
 
-        <button class="btn btn-share" id="btnPartager" onclick="lancerLocalisation()">📍 PARTAGER MA MAISON</button>
+        <button class="btn btn-share" id="btnPartager" onclick="lancerLocalisation()">
+            <span>📍</span> PARTAGER MA POSITION
+        </button>
 
         <div id="resultat">
-            <h3 id="titreMotif" style="color: var(--burkina-rouge);"></h3>
+            <h3 id="titreMotif" style="color: var(--burkina-rouge); margin-top: 0;"></h3>
             <div id="qrcode"></div>
-            <p>Lien généré :</p>
-            <a id="linkApp" target="_blank">Ouvrir l'itinéraire</a>
+            <p style="font-size: 13px; color: #888;">Scannez ce code ou cliquez ci-dessous :</p>
+            <a id="linkApp" target="_blank">Ouvrir dans Maps</a>
         </div>
 
         <button class="btn btn-arrived" id="btnArrive" onclick="signalerArrivee()">✅ JE SUIS ARRIVÉ !</button>
-        <button class="btn btn-logout" id="btnLogout" onclick="deconnexion()">Déconnexion / Fermer</button>
+        <button class="btn btn-logout" id="btnLogout" onclick="deconnexion()">Déconnexion</button>
     </div>
 
     <script>
         const CODE_SECRET = "2026"; 
 
         window.onload = function() {
-            let tentative = prompt("Entrez le code secret APLYBS :");
+            let tentative = prompt("Entrez le code secret APLYBS (2026) :");
             if (tentative === CODE_SECRET) {
-                document.body.style.display = "block";
+                document.body.style.display = "flex";
             } else {
-                alert("Accès refusé. Code incorrect.");
-                document.body.innerHTML = "<div style='padding:50px;'><h1>Accès Verrouillé 🔒</h1><p>Veuillez contacter l'administrateur.</p></div>";
+                alert("Accès refusé.");
+                document.body.innerHTML = "<div style='text-align:center; padding:50px;'><h1>🔒 Accès Verrouillé</h1><p>Contactez l'administrateur.</p></div>";
                 document.body.style.display = "block";
             }
         };
 
-        let lienGlobal = "";
-
         function lancerLocalisation() {
+            const btn = document.getElementById('btnPartager');
+            btn.innerText = "Recherche en cours...";
+            btn.style.opacity = "0.7";
+
             const motif = document.getElementById('motif').value;
+
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
-                    lienGlobal = `https://www.google.com/maps?q=${lat},${lon}`;
+                    
+                    // Lien Google Maps corrigé
+                    const lienGlobal = `https://www.google.com/maps?q=${lat},${lon}`;
                     
                     document.getElementById('resultat').style.display = 'block';
                     document.getElementById('titreMotif').innerText = motif;
                     document.getElementById('linkApp').href = lienGlobal;
-                    document.getElementById('linkApp').innerText = "Cliquer pour voir le trajet";
                     
-                    document.getElementById('btnArrive').style.display = 'block';
-                    document.getElementById('btnLogout').style.display = 'block';
+                    document.getElementById('btnArrive').style.display = 'flex';
+                    document.getElementById('btnLogout').style.display = 'flex';
                     document.getElementById('btnPartager').style.display = 'none';
 
                     document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode"), { text: lienGlobal, width: 150, height: 150 });
+                    new QRCode(document.getElementById("qrcode"), { 
+                        text: lienGlobal, 
+                        width: 140, 
+                        height: 140,
+                        colorDark : "#2c3e50",
+                        colorLight : "#ffffff"
+                    });
 
                     if (navigator.share) {
                         navigator.share({
                             title: 'APLYBS LOCATOR',
-                            text: `Lieu de la réunion (${motif}) :`,
+                            text: `📍 Position pour : ${motif}`,
                             url: lienGlobal
-                        });
+                        }).catch(() => {});
                     }
                 }, function() {
-                    alert("Erreur : Veuillez activer le GPS.");
-                });
+                    alert("Erreur : Veuillez activer votre GPS.");
+                    btn.innerText = "📍 PARTAGER MA POSITION";
+                    btn.style.opacity = "1";
+                }, { enableHighAccuracy: true });
             }
         }
 
         function signalerArrivee() {
-            const msg = encodeURIComponent("Je suis bien arrivé à la réunion de l'Amicale ! 🏠");
+            const msg = encodeURIComponent("Salut ! Je suis bien arrivé à la réunion de l'Amicale ! 🏠");
             window.open(`https://wa.me/?text=${msg}`, '_blank');
         }
 
         function deconnexion() {
-            if(confirm("Voulez-vous quitter l'application ?")) {
+            if(confirm("Voulez-vous vous déconnecter ?")) {
                 location.reload();
             }
         }
